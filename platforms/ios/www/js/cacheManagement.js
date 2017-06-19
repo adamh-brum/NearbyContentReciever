@@ -39,49 +39,56 @@ syncCacheWithServer = function (http, scope) {
     cache.ratings = newRatingCache;
   }
 
-  console.log("refreshCache: refreshing groups");
+  console.log("syncCacheWithServer: refreshing groups");
   if (!cache.groups) {
     cache.groups = [];
   }
 
   var groupsUrl = generateGroupsUrl();
   http.get(groupsUrl).success(function (response) {
-    console.log("refreshCache: groups found from server." + JSON.stringify(response));
+    console.log("syncCacheWithServer: groups found from server." + JSON.stringify(response));
     var groupsList = [];
     if (response) {
       // For each group in the group list, add it to cache
       response.forEach(function (groupName) {
-        console.log("refreshCache: Processing group " + groupName);
+        console.log("syncCacheWithServer: Processing group " + groupName);
 
         // Check to see if the group already exists
         var found = false;
-        console.log("refreshCache: checking existing cache to see if groups already exist");
+        console.log("syncCacheWithServer: checking existing cache to see if groups already exist");
         cache.groups.forEach(function (existingGroup) {
           if (existingGroup.name === groupName) {
-            console.log("refreshCache: Group " + groupName + " already exists");
+            found = true;
+            console.log("syncCacheWithServer: Group " + groupName + " already exists");
             groupsList.unshift(angular.extend({}, { name: groupName, class: existingGroup.class }));
           }
         });
 
         if (!found) {
           // Before adding it, see if it was already added
-          console.log("refreshCache: Group " + groupName + " not found. Adding to cache.");
+          console.log("syncCacheWithServer: Group " + groupName + " not found. Adding to cache.");
           groupsList.unshift(angular.extend({}, { name: groupName, class: "fa fa-check-circle" }));
         }
       });
     }
 
-    console.log("refreshCache: Group refreshed: " + JSON.stringify(groupsList));
+    console.log("syncCacheWithServer: Group refreshed: " + JSON.stringify(groupsList));
     cache.groups = groupsList;
 
-    console.log("Saving new cache: " + JSON.stringify(cache));
+    console.log("syncCacheWithServer: Saving new cache: " + JSON.stringify(cache));
 
     writeCache(cache);
 
-    console.log("Cards saved. Forcing UI refresh");
+    console.log("syncCacheWithServer: Cache saved. Forcing UI refresh");
 
     scope.loadCache();
   });
+
+  writeCache(cache);
+
+  console.log("Cards saved. Forcing UI refresh");
+
+  scope.loadCache();
 
   return true;
 }
