@@ -1,0 +1,12 @@
+/* Empty. Add your own CSS if you like */
+.invisible {
+    display: none;
+}
+
+.visible {
+    display: block;
+}
+
+.page {
+    padding-bottom: 50px;
+}
