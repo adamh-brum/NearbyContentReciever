@@ -51,7 +51,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
 
           // Get beacons from the server
           console.log("Requesting beacons from server");
-          var url = "http://localhost:5000/api/Beacon";
+          var url = "http://nearbycontentapi.azurewebsites.net/api/Beacon";
           $http.get(url).success(function (response) {
             console.log("Response recieved from server");
             console.log(JSON.stringify(response));
@@ -166,10 +166,10 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
       });
     }
 
-    var emptyThumbsDown = "fa fa-thumbs-o-down";
-    var thumbsDown = "fa fa-thumbs-down";
-    var emptyThumbsUp = "fa fa-thumbs-o-up";
-    var thumbsUp = "fa fa-thumbs-up";
+    var emptyThumbsDown = "fa fa-2x fa-thumbs-o-down";
+    var thumbsDown = "fa fa-2x fa-thumbs-down";
+    var emptyThumbsUp = "fa fa-2x fa-thumbs-o-up";
+    var thumbsUp = "fa fa-2x fa-thumbs-up";
 
     $scope.downRateCard = function (id) {
       console.log("rateCard: up rate content " + id);

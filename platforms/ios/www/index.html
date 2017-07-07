@@ -46,7 +46,7 @@
 
 <body ng-app="contentReceiver" ng-controller="CardsCtrl" class="platform-ios platform-cordova platform-webview">
   <ion-header-bar class="bar-stable">
-    <h1 class="title">Content Reciever</h1>
+    <h1 class="title">Capgemini Messages</h1>
   </ion-header-bar>
 
   <!--Before I forget... shift + { creates {}... so it automatically creates a close. (VS Code) Super helpful with Angular-->
@@ -71,16 +71,15 @@
         </div>
       </div>
     </div>
+  </ion-content>
+
+  <ion-footer-bar>
     <ion-tabs class="tabsContainer">
       <ion-tab title="<i class='fa fa-comments' aria-hidden='true'></i> Messages" on-select="openMessages()">
       </ion-tab>
       <ion-tab title="<i class='fa fa-list-ul' aria-hidden='true'></i> Subscriptions" on-select="openSettings()">
       </ion-tab>
     </ion-tabs>
-  </ion-content>
-
-  <ion-footer-bar>
-    <p>Copyright 2017</p>
   </ion-footer-bar>
 </body>
 
