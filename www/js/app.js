@@ -89,7 +89,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
 
     $scope.clickGroup = function (groupName) {
       $scope.groups.forEach(function (group) {
-        if(group.class === "fa fa-check-circle"){
+        if (group.class === "fa fa-check-circle") {
           group.class = "fa fa-check-circle-o";
         }
         else {
@@ -151,16 +151,18 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     $scope.getCardFromServer = function (beaconId) {
       console.log("getCardFromServer: Attempting to retrieve content for beacon UUID: " + beaconId);
 
-      var url = "http://localhost:5000/api/Schedule?locationId=" + beaconId;
+      var url = generateGetContentUrl(beaconId);
       $http.get(url).success(function (response) {
         console.log("getCardFromServer: Response recieved from server")
         console.log(response);
         console.log("getCardFromServer: Response is " + JSON.stringify(response));
-        response.forEach(function (element) {
-          console.log("getCardFromServer: Parsing a response");
-          console.log("getCardFromServer: Response has description: " + element.contentShortDescription);
-          $scope.addCard(element.id, element.content, element.contentShortDescription, element.RequestDateTime, element.locationName);
-        }, this);
+        if (response != "") {
+          response.forEach(function (element) {
+            console.log("getCardFromServer: Parsing a response");
+            console.log("getCardFromServer: Response has description: " + element.contentShortDescription);
+            $scope.addCard(element.id, element.content, element.contentShortDescription, element.RequestDateTime, element.locationName);
+          }, this);
+        }
       });
     }
 
@@ -271,7 +273,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     syncCacheWithServer($http, $scope);
 
     // Add some stub data
-    //$scope.getCardFromServer("74278BDA-B644-4520-8F0C-720EAF059935");
+    $scope.getCardFromServer("74278bda-b6444520-8f0c720e-af059935");
 
     // Load the saved cards
     $scope.loadCache();

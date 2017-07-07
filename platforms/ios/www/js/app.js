@@ -151,7 +151,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     $scope.getCardFromServer = function (beaconId) {
       console.log("getCardFromServer: Attempting to retrieve content for beacon UUID: " + beaconId);
 
-      var url = "http://localhost:5000/api/Schedule?locationId=" + beaconId;
+      var url = generateGetContentUrl(beaconId);
       $http.get(url).success(function (response) {
         console.log("getCardFromServer: Response recieved from server")
         console.log(response);
@@ -271,7 +271,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     syncCacheWithServer($http, $scope);
 
     // Add some stub data
-    //$scope.getCardFromServer("74278BDA-B644-4520-8F0C-720EAF059935");
+    $scope.getCardFromServer("74278BDA-B644-4520-8F0C-720EAF059935");
 
     // Load the saved cards
     $scope.loadCache();

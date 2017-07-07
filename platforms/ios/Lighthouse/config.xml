@@ -45,12 +45,15 @@
     <author email="you@example.com" href="http://example.com/">
       Your Name Here
     </author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://10.18.40.41:8100" />
     <access origin="*" />
     <allow-navigation href="http://192.168.0.29:8100" />
     <allow-navigation href="http://172.16.8.214:8100" />
     <allow-navigation href="http://172.16.8.47:8100" />
     <allow-navigation href="http://172.16.0.169:8100" />
+    <allow-navigation href="http://10.255.211.111:8100" />
+    <allow-navigation href="http://10.18.40.75:8100" />
+    <allow-navigation href="http://10.18.40.41:8100" />
     <icon height="57" src="resources/ios/icon/icon.png" width="57" />
     <icon height="114" src="resources/ios/icon/icon@2x.png" width="114" />
     <icon height="40" src="resources/ios/icon/icon-40.png" width="40" />

@@ -1,7 +1,15 @@
 generateRatingsUrl = function (contentId, rating) {
-    return "http://localhost:5000/api/Ratings?contentId=" + contentId + "&rating=" + rating;
+    return generateUrl("Ratings?contentId=" + contentId + "&rating=" + rating);
 }
 
 generateGroupsUrl = function () {
-    return "http://localhost:5000/api/Metadata?key=Teams";
+    return generateUrl("Metadata?key=Teams");
+}
+
+generateGetContentUrl = function (locationId){
+    return generateUrl("Schedule/ByLocation?locationId=" + locationId);
+}
+
+generateUrl = function (partialUrl){
+    return "http://nearbycontentapi.azurewebsites.net/api/" + partialUrl;
 }
