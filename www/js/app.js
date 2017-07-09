@@ -32,19 +32,25 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
           var delegate = new window.cordova.plugins.locationManager.Delegate();
 
           delegate.didDetermineStateForRegion = function (pluginResult) {
+            // if we are inside the beacon region, go grab content
+            if (pluginResult.state && pluginResult.state === "CLRegionStateInside") {
+              console.log("Inside region for beacon: " + pluginResult.region.uuid);
+              //$scope.getCardFromServer(pluginResult.region.uuid);
+            }
+
             console.log('didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
           };
 
-          delegate.didExitRegion = function (pluginResult) {
-            console.log('didExitRegion: ' + JSON.stringify(pluginResult));
-          };
+          // delegate.didExitRegion = function (pluginResult) {
+          //   console.log('didExitRegion: ' + JSON.stringify(pluginResult));
+          // };
 
-          delegate.didEnterRegion = function (pluginResult) {
-            console.log('didEnterRegion: ' + JSON.stringify(pluginResult));
-          };
+          // delegate.didEnterRegion = function (pluginResult) {
+          //   console.log('didEnterRegion: ' + JSON.stringify(pluginResult));
+          // };
 
           delegate.didStartMonitoringForRegion = function (pluginResult) {
-            console.log('didStartMonitoringForRegion:', pluginResult);
+            console.log('didStartMonitoringForRegion: ' + JSON.stringify(pluginResult));
           };
 
           cordova.plugins.locationManager.setDelegate(delegate);
@@ -56,10 +62,21 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
             console.log("Response recieved from server");
             console.log(JSON.stringify(response));
             response.forEach(function (element) {
-              console.log("Registering beacon " + element.name);
-              var id = element.name;
-              var uuid = element.id.toString();
-              var region = new cordova.plugins.locationManager.BeaconRegion(id, uuid, 0, 0);
+              console.log("Registering beacon " + element.uuid);
+              var id = element.beaconId;
+              console.log("12");
+              var uuid = element.uuid;
+              console.log("123");
+              try {
+                var region = new cordova.plugins.locationManager.BeaconRegion(id, uuid);
+              }
+              catch (ex) {
+                console.log("An error occured while creating a beacon region: " + JSON.stringify(ex));
+                console.log("Error message:" + ex.message);
+              }
+              console.log("dsfhjkhk");
+              console.log(region);
+              console.log("Searching for beacons with region: " + JSON.stringify(region));
 
               cordova.plugins.locationManager.startMonitoringForRegion(region)
                 .fail(console.error)
@@ -273,7 +290,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     syncCacheWithServer($http, $scope);
 
     // Add some stub data
-    $scope.getCardFromServer("74278bda-b6444520-8f0c720e-af059935");
+    // $scope.getCardFromServer("74278bda-b6444520-8f0c720e-af059935");
 
     // Load the saved cards
     $scope.loadCache();

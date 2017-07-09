@@ -62,6 +62,14 @@
             <a href='' on-tap="downRateCard(card.id)"><i class="{{card.thumbDownClass}}"></i></a>
           </div>
         </div>
+        <div class="card" ng-if="!cards.length">
+          <div class="item item-text-wrap">
+            <i class="fa fa-3x fa-comments-o" aria-hidden="true"></i>
+            <br/>
+            <h2>No messages</h2>
+            <p>You have no messages. Messages are delivered based on where you are in the Midlands Delivery Centre. Take your phone on the go and see what messages get delivered! <i class="fa fa-building-o" aria-hidden="true"></i></p>
+          </div>
+        </div>
       </div>
       <div id="settings" class="{{settingsClass}}">
         <h3>Subscriptions</h3>
