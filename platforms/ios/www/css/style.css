@@ -10,3 +10,8 @@
 .page {
     padding-bottom: 50px;
 }
+
+.ratingLink{
+    padding: 10px;
+    float: right;
+}

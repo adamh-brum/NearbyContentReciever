@@ -58,8 +58,8 @@
           <div class="item item-text-wrap">
             <h2>{{card.title}}</h2>
             <div ng-bind-html="card.htmlContent"></div>
-            <a href='' on-tap="upRateCard(card.id)"><i class="{{card.thumbUpClass}}"></i></a>
-            <a href='' on-tap="downRateCard(card.id)"><i class="{{card.thumbDownClass}}"></i></a>
+            <a href='' class="ratingLink" on-tap="upRateCard(card.id)"><i class="{{card.thumbUpClass}}"></i></a>
+            <a href='' class="ratingLink" on-tap="downRateCard(card.id)"><i class="{{card.thumbDownClass}}"></i></a>
           </div>
         </div>
         <div class="card" ng-if="!cards.length">

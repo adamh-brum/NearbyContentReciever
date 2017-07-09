@@ -10,6 +10,10 @@ readCache = function () {
         cache = { cards: [] };
       }
     }
+    
+    if (cache === "") {
+      cache = { cards: [], ratings: [] }
+    }
 
     console.log("readCache: " + JSON.stringify(cache));
   }
