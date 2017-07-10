@@ -85,8 +85,9 @@ navigator.serviceWorker.register('service-worker.js')
       <div id="settings" class="{{settingsClass}} card">
         <div class="info-page">
           <h3 class="info-page">Subscriptions</h3>
-          <p>To ensure you only get relevant messages, you can subscribe and unsubscribe from any of the below message groups</p>
-          <p>Simply tap the message group to stop seeing messages in those categories!</p>
+          <p>To ensure you only get relevant messages, you can subscribe and unsubscribe from any of the below message groups.</p>
+          <p>If you wish to stop seeing messages from certain groups, simply tap the group you no longer want to see.</p>
+          <p>If a message is tagged with multiple groups, and you are subscribed to at least one of those groups, you will see the message.</p>
           <div class="group" ng-repeat="group in groups">
             <a href="#" on-tap="clickGroup(group.name)"><i class="{{group.class}}" aria-hidden="true"></i>{{group.name}}</a>
           </div>

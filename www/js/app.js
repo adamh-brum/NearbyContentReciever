@@ -171,16 +171,29 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
         if (response != "") {
           var cards = [];
           response.forEach(function (content) {
-            cards.push({ 
-              id: content.id, 
-              htmlContent: 
-              content.content, 
-              title: content.contentShortDescription, 
-              dateTime: content.requestDateTime, 
-              location: content.location,
-              tags: content.tags, 
-              thumbUpClass: emptyThumbsUp, 
-              thumbDownClass: emptyThumbsDown })
+            // check if user is subscribed to any of the tags, otherwise skip
+            var displayCard = false;
+            content.tags.forEach(function (subscribedTag) {
+              $scope.groups.forEach(function (messageTag) {
+                if (messageTag.name === subscribedTag) {
+                  displayCard = true;
+                }
+              });
+            });
+
+            if (displayCard) {
+              cards.push({
+                id: content.id,
+                htmlContent:
+                content.content,
+                title: content.contentShortDescription,
+                dateTime: content.requestDateTime,
+                location: content.location,
+                tags: content.tags,
+                thumbUpClass: emptyThumbsUp,
+                thumbDownClass: emptyThumbsDown
+              })
+            }
           });
 
           $scope.addCards(cards);
@@ -269,7 +282,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     syncCacheWithServer($http, $scope);
 
     // Add some stub data
-    // $scope.getCardFromServer("84addf9c-649f-11e7-907b-a6006ad3dba0");
+    $scope.getCardFromServer("84addf9c-649f-11e7-907b-a6006ad3dba0");
 
     // Load the saved cards
     $scope.loadCache();
