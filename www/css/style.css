@@ -76,3 +76,50 @@
 .tabsContainer i {
     color: rgba(0, 152, 204, 1);
 }
+
+.info-page-header {
+    color: black;
+    font-size: 9px;
+}
+
+.info-page {
+    background-color: white;
+    color: black;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.info-page p {
+    color: black;
+    padding-left: 10px;
+    font-size: 15px;
+}
+
+.info-page i {
+    color: rgba(0, 152, 204, 1);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.info-page a {
+    height: 30px;
+    font-size: 17px;
+    text-decoration-line: none;
+    color: rgba(0, 152, 204, 1);
+}
+
+.group {
+    height: 30px;
+}
+
+.branded-badge {
+    border-radius: 15px;
+    padding: 6px;
+    margin-bottom: 15px;
+    background-color: white;
+    color: rgba(0, 152, 204, 1);
+}
+
+.cardSection-top {
+    padding-top: 10px;
+}

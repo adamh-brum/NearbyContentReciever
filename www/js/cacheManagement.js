@@ -1,6 +1,4 @@
 readCache = function () {
-  writeCache("");
-
   console.log("readCache: reading the cache");
   var cache = { cards: [] };
 

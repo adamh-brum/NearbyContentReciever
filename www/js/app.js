@@ -143,8 +143,8 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
           // As the card already exists, it may be on the UI already
           var displayedCard = $scope.getCardById(card.id);
           if (displayedCard) {
-            // If it is on the UI, update it and send a notification if it has changed (Otherwise do nothing)
-            if (displayedCard.htmlContent === card.htmlContent) {
+            // If it is different to the UI version, update it and send a notification if it has changed (Otherwise do nothing)
+            if (displayedCard.htmlContent != card.htmlContent) {
               $scope.notify(card.title);
 
               displayedCard.htmlContent = card.htmlContent;
@@ -177,7 +177,8 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
               content.content, 
               title: content.contentShortDescription, 
               dateTime: content.requestDateTime, 
-              location: content.location, 
+              location: content.location,
+              tags: content.tags, 
               thumbUpClass: emptyThumbsUp, 
               thumbDownClass: emptyThumbsDown })
           });
