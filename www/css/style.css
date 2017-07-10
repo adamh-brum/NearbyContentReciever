@@ -65,6 +65,14 @@
     color: rgba(0, 152, 204, 1);
 }
 
-.item h1, h2, h3, h4, h5, i, p {
+.branded-item h1, h2, h3, h4, h5, i {
+    color: white;
+}
+
+.branded-item p {
     color: white !important;
+}
+
+.tabsContainer i {
+    color: rgba(0, 152, 204, 1);
 }

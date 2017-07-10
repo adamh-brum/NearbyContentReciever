@@ -268,7 +268,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     syncCacheWithServer($http, $scope);
 
     // Add some stub data
-    $scope.getCardFromServer("84addf9c-649f-11e7-907b-a6006ad3dba0");
+    // $scope.getCardFromServer("84addf9c-649f-11e7-907b-a6006ad3dba0");
 
     // Load the saved cards
     $scope.loadCache();

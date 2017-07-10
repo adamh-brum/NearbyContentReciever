@@ -55,7 +55,7 @@
       <div id="messages" class="{{messagesClass}}">
         {{hi}}
         <div class="card branded-card" ng-repeat="card in cards">
-          <div class="item item-text-wrap">
+          <div class="item branded-item item-text-wrap">
             <div class="cardSection">
               <h2>{{card.title}}</h2>
               <h3>{{card.location}}</h3>
@@ -70,7 +70,8 @@
           </div>
         </div>
         <div class="card branded-card" ng-if="!cards.length">
-          <div class="simple-item item-text-wrap">
+          <div class="item branded-item item-text-wrap">
+
             <i class="fa fa-3x fa-comments-o" aria-hidden="true"></i>
             <br/>
             <h2>No messages</h2>
@@ -80,7 +81,7 @@
         </div>
       </div>
       <div id="settings" class="{{settingsClass}} card branded-card">
-        <div class="item item-text-wrap">
+        <div class="item branded-item item-text-wrap">
           <h2>Subscriptions</h2>
           <p>To ensure you only get relevant messages, you can subscribe and unsubscribe from any of the below message groups</p>
           <div class="group" ng-repeat="group in groups">
