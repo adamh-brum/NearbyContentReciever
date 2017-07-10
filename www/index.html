@@ -45,37 +45,47 @@
 </head>
 
 <body ng-app="contentReceiver" ng-controller="CardsCtrl">
-  <ion-header-bar class="bar-stable">
-    <h1 class="title">Capgemini Messages</h1>
+  <ion-header-bar class="branded-header">
+    <img src="/img/logo.png" />
   </ion-header-bar>
 
   <!--Before I forget... shift + { creates {}... so it automatically creates a close. (VS Code) Super helpful with Angular-->
-  <ion-content class="has-header">
+  <ion-content class="has-header branded-content">
     <div class="page">
       <div id="messages" class="{{messagesClass}}">
         {{hi}}
-        <div class="card" ng-repeat="card in cards">
+        <div class="card branded-card" ng-repeat="card in cards">
           <div class="item item-text-wrap">
-            <h2>{{card.title}}</h2>
-            <div ng-bind-html="card.htmlContent"></div>
-            <a href='' class="ratingLink" on-tap="upRateCard(card.id)"><i class="{{card.thumbUpClass}}"></i></a>
-            <a href='' class="ratingLink" on-tap="downRateCard(card.id)"><i class="{{card.thumbDownClass}}"></i></a>
+            <div class="cardSection">
+              <h2>{{card.title}}</h2>
+              <h3>{{card.location}}</h3>
+            </div>
+            <div class="cardSection">
+              <div ng-bind-html="card.htmlContent"></div>
+            </div>
+            <div>
+              <a href='' class="ratingLink" on-tap="upRateCard(card.id)"><i class="{{card.thumbUpClass}}"></i></a>
+              <a href='' class="ratingLink" on-tap="downRateCard(card.id)"><i class="{{card.thumbDownClass}}"></i></a>
+            </div>
           </div>
         </div>
-        <div class="card" ng-if="!cards.length">
-          <div class="item item-text-wrap">
+        <div class="card branded-card" ng-if="!cards.length">
+          <div class="simple-item item-text-wrap">
             <i class="fa fa-3x fa-comments-o" aria-hidden="true"></i>
             <br/>
             <h2>No messages</h2>
-            <p>You have no messages. Messages are delivered based on where you are in the Midlands Delivery Centre. Take your phone on the go and see what messages get delivered! <i class="fa fa-building-o" aria-hidden="true"></i></p>
+            <p>You have no messages. Messages are delivered based on where you are in the Midlands Delivery Centre. Take your
+              phone on the go and see what messages get delivered! <i class="fa fa-building-o" aria-hidden="true"></i></p>
           </div>
         </div>
       </div>
-      <div id="settings" class="{{settingsClass}}">
-        <h3>Subscriptions</h3>
-        <p>To ensure you only get relevant messages, you can subscribe and unsubscribe from any of the below message groups</p>
-        <div class="group" ng-repeat="group in groups">
-          <a href="#" on-tap="clickGroup(group.name)"><i class="{{group.class}}" aria-hidden="true"></i>{{group.name}}</a>
+      <div id="settings" class="{{settingsClass}} card branded-card">
+        <div class="item item-text-wrap">
+          <h2>Subscriptions</h2>
+          <p>To ensure you only get relevant messages, you can subscribe and unsubscribe from any of the below message groups</p>
+          <div class="group" ng-repeat="group in groups">
+            <a href="#" on-tap="clickGroup(group.name)"><i class="{{group.class}}" aria-hidden="true"></i>{{group.name}}</a>
+          </div>
         </div>
       </div>
     </div>

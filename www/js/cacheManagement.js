@@ -1,4 +1,6 @@
 readCache = function () {
+  writeCache("");
+
   console.log("readCache: reading the cache");
   var cache = { cards: [] };
 
@@ -10,7 +12,7 @@ readCache = function () {
         cache = { cards: [] };
       }
     }
-    
+
     if (cache === "") {
       cache = { cards: [], ratings: [] }
     }
