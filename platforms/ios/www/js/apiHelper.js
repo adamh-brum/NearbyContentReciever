@@ -3,7 +3,7 @@ generateRatingsUrl = function (contentId, rating) {
 }
 
 generateGroupsUrl = function () {
-    return generateUrl("Metadata?key=Teams");
+    return generateUrl("Metadata?key=ContentTags");
 }
 
 generateGetContentUrl = function (locationId){

@@ -113,6 +113,12 @@ updateRatings = function (cardId, rating) {
   writeCache(cache);
 }
 
+updateGroups = function (groups) {
+  var cache = readCache();
+  cache.groups = groups;
+  writeCache(cache);
+}
+
 updateCards = function (cards) {
   console.log("ordering cards before save. Cards before order: " + JSON.stringify(cards));
 

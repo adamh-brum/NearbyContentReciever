@@ -178,13 +178,18 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
           response.forEach(function (content) {
             // check if user is subscribed to any of the tags, otherwise skip
             var displayCard = false;
-            content.tags.forEach(function (subscribedTag) {
-              $scope.groups.forEach(function (messageTag) {
-                if (messageTag.name === subscribedTag) {
-                  displayCard = true;
-                }
+            if (content.tags != undefined && content.tags != null && content.tags.length > 0) {
+              content.tags.forEach(function (subscribedTag) {
+                $scope.groups.forEach(function (messageTag) {
+                  if (messageTag.name === subscribedTag) {
+                    displayCard = true;
+                  }
+                });
               });
-            });
+            }
+            else {
+              displayCard = true;
+            }
 
             if (displayCard) {
               cards.push({
@@ -224,11 +229,14 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
       }
 
       var url = generateRatingsUrl(id, rating);
+      console.log("rateCard: Current Rating: " + card.thumbDownClass);
       if (card.thumbDownClass == emptyThumbsDown) {
         card.thumbDownClass = thumbsDown;
+        console.log("rateCard: New Rating: " + thumbsDown);
       }
       else if (card.thumbDownClass == thumbsDown) {
         card.thumbDownClass = emptyThumbsDown;
+        console.log("rateCard: New Rating: " + emptyThumbsDown);
       }
 
       $http.put(url).success(function (response) {
@@ -240,8 +248,6 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     }
 
     $scope.upRateCard = function (id) {
-      console.log("up");
-
       var card = $scope.getCardById(id);
 
       // Also, if card is downrated, up rate
@@ -287,7 +293,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     syncCacheWithServer($http, $scope);
 
     // Add some stub data
-    // $scope.getCardFromServer("84addf9c-649f-11e7-907b-a6006ad3dba0");
+    $scope.getCardFromServer("84addf9c-649f-11e7-907b-a6006ad3dba0");
 
     // Load the saved cards
     $scope.loadCache();

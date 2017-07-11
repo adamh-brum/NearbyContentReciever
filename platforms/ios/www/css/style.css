@@ -15,3 +15,111 @@
     padding: 10px;
     float: right;
 }
+
+.cardSection{
+    padding-bottom: 5px;
+    border-bottom: 1px solid #f5f5f5;
+    margin-bottom: 5px;
+}
+
+.branded-header{
+    height: 3.5em;
+    margin-top: 0.5em;
+    width: 100%;
+    background-color: white;
+}
+
+.branded-header h1 {
+    font-size: 20px;
+}
+
+.branded-header img{
+    max-height: 2.5em;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.branded-content{
+    background-color: rgba(177, 179, 180, 0.27);
+}
+
+.branded-card {
+    color: white;
+    background-color: rgba(0, 152, 204, 1);
+}
+
+.item {
+    color: white;
+    background-color: inherit;
+}
+
+.settings {
+    background-color: white;
+    padding-top: 1em;
+    margin: 15px;
+    color: rgba(0, 152, 204, 1);
+}
+
+.settings h3 {
+    color: rgba(0, 152, 204, 1);
+}
+
+.branded-item h1, h2, h3, h4, h5, i {
+    color: white;
+}
+
+.branded-item p {
+    color: white !important;
+}
+
+.tabsContainer i {
+    color: rgba(0, 152, 204, 1);
+}
+
+.info-page-header {
+    color: black;
+    font-size: 9px;
+}
+
+.info-page {
+    background-color: white;
+    color: black;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.info-page p {
+    color: black;
+    padding-left: 10px;
+    font-size: 15px;
+}
+
+.info-page i {
+    color: rgba(0, 152, 204, 1);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.info-page a {
+    height: 30px;
+    font-size: 17px;
+    text-decoration-line: none;
+    color: rgba(0, 152, 204, 1);
+}
+
+.group {
+    height: 30px;
+}
+
+.branded-badge {
+    border-radius: 15px;
+    padding: 6px;
+    margin-bottom: 15px;
+    background-color: white;
+    color: rgba(0, 152, 204, 1);
+}
+
+.cardSection-top {
+    padding-top: 10px;
+}

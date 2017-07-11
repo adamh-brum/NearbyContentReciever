@@ -42,6 +42,11 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     $scope.messagesClass = "visible";
     $scope.groups = [];
 
+    var emptyThumbsDown = "fa fa-2x fa-thumbs-o-down";
+    var thumbsDown = "fa fa-2x fa-thumbs-down";
+    var emptyThumbsUp = "fa fa-2x fa-thumbs-o-up";
+    var thumbsUp = "fa fa-2x fa-thumbs-up";
+
     // Start ranging for beacons
     $ionicPlatform.ready(function () {
       var delegate = new window.cordova.plugins.locationManager.Delegate();
@@ -86,13 +91,18 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
 
     $scope.clickGroup = function (groupName) {
       $scope.groups.forEach(function (group) {
-        if (group.class === "fa fa-check-circle") {
-          group.class = "fa fa-check-circle-o";
-        }
-        else {
-          group.class = "fa fa-check-circle";
+        if (groupName === group.name) {
+          if (group.class === "fa fa-check-circle") {
+            group.class = "fa fa-check-circle-o";
+          }
+          else {
+            group.class = "fa fa-check-circle";
+          }
         }
       });
+
+      // save changes
+      updateGroups($scope.groups);
     }
 
     $scope.openMessages = function () {
@@ -111,72 +121,90 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
 
     $scope.loadCache = function () {
       var cache = readCache();
-
-      for (cardIndex in cache.cards) {
-        $scope.displayCard(cache.cards[cardIndex]);
-      }
-
-      // Retrieve saved groups
+      this.addCards(cache.cards);
       $scope.groups = cache.groups;
     }
 
     $scope.displayCard = function (card) {
-      console.log("Displaying card " + JSON.stringify(card));
-
       $scope.cards.unshift(angular.extend({}, card));
     }
 
-    $scope.addCard = function (contentId, content, name, requestDateTime, locationName) {
-      var card = { id: contentId, htmlContent: content, title: name, dateTime: requestDateTime, location: locationName, thumbUpClass: "fa fa-thumbs-o-up", thumbDownClass: "fa fa-thumbs-o-down" };
-      $scope.displayCard(card);
-
-      // Cards are added to array and storage now
-      updateCards($scope.cards);
-    }
-
-    $scope.updateCard = function (card){
-      var card = $scope.getCardById(card.id);
-      card.content = card.content;
-    }
-
-    $scope.nofify = function (notification){
+    $scope.notify = function (notification) {
       console.log(notification);
     }
 
-    $scope.getCardFromServer = function (beaconId) {
+    $scope.addCards = function (newCards) {
+      // Check if we already have this content, and if we should update it.
       var cache = readCache();
+      newCards.forEach(function (newCard) {
+        var card = null;
+        cache.cards.forEach(function (existingCard) {
+          if (existingCard.id === newCard.id) {
+            card = newCard;
+          }
+        });
+
+        if (card != null) {
+          // As the card already exists, it may be on the UI already
+          var displayedCard = $scope.getCardById(card.id);
+          if (displayedCard) {
+            // If it is different to the UI version, update it and send a notification if it has changed (Otherwise do nothing)
+            if (displayedCard.htmlContent != card.htmlContent) {
+              $scope.notify(card.title);
+
+              displayedCard.htmlContent = card.htmlContent;
+            }
+          }
+          else {
+            // Card not yet on UI, so just reload it (NO notification, as the user will have already been notified)
+            $scope.displayCard(newCard);
+          }
+        }
+        else {
+          $scope.notify(newCard.title);
+          $scope.displayCard(newCard);
+        }
+      });
+
+      updateCards($scope.cards);
+    }
+
+    $scope.getCardFromServer = function (beaconId) {
       var url = generateGetContentUrl(beaconId);
 
       $http.get(url).success(function (response) {
         if (response != "") {
-
-          response.forEach(function (newCard) {
-            // Check if we already have this content, and if we should update it.
-            var card = null;
-            cache.cards.forEach(function (existingCard) {
-              if (existingCard.id === newCard.id) {
-                card = newCard;
-              }
+          var cards = [];
+          response.forEach(function (content) {
+            // check if user is subscribed to any of the tags, otherwise skip
+            var displayCard = false;
+            content.tags.forEach(function (subscribedTag) {
+              $scope.groups.forEach(function (messageTag) {
+                if (messageTag.name === subscribedTag) {
+                  displayCard = true;
+                }
+              });
             });
 
-            if (card != null && card.content != element.content) {
-              $scope.notify(card.contentShortDescription);
-              $scope.updateCard(card);
+            if (displayCard) {
+              cards.push({
+                id: content.id,
+                htmlContent:
+                content.content,
+                title: content.contentShortDescription,
+                dateTime: content.requestDateTime,
+                location: content.location,
+                tags: content.tags,
+                thumbUpClass: emptyThumbsUp,
+                thumbDownClass: emptyThumbsDown
+              })
             }
-            else {
-              $scope.notify(newCard.contentShortDescription);
-              $scope.addCard(newCard.id, newCard.content, newCard.contentShortDescription, newCard.RequestDateTime, newCard.locationName);
-            }
+          });
 
-          }, this);
+          $scope.addCards(cards);
         }
       });
     }
-
-    var emptyThumbsDown = "fa fa-3x fa-thumbs-o-down";
-    var thumbsDown = "fa fa-3x fa-thumbs-down";
-    var emptyThumbsUp = "fa fa-3x fa-thumbs-o-up";
-    var thumbsUp = "fa fa-3x fa-thumbs-up";
 
     $scope.downRateCard = function (id) {
       var card = $scope.getCardById(id);
