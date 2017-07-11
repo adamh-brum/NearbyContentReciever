@@ -91,13 +91,18 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
 
     $scope.clickGroup = function (groupName) {
       $scope.groups.forEach(function (group) {
-        if (group.class === "fa fa-check-circle") {
-          group.class = "fa fa-check-circle-o";
-        }
-        else {
-          group.class = "fa fa-check-circle";
+        if (groupName === group.name) {
+          if (group.class === "fa fa-check-circle") {
+            group.class = "fa fa-check-circle-o";
+          }
+          else {
+            group.class = "fa fa-check-circle";
+          }
         }
       });
+
+      // save changes
+      updateGroups($scope.groups);
     }
 
     $scope.openMessages = function () {
@@ -282,7 +287,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     syncCacheWithServer($http, $scope);
 
     // Add some stub data
-    $scope.getCardFromServer("84addf9c-649f-11e7-907b-a6006ad3dba0");
+    // $scope.getCardFromServer("84addf9c-649f-11e7-907b-a6006ad3dba0");
 
     // Load the saved cards
     $scope.loadCache();
