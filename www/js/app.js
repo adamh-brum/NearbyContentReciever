@@ -42,10 +42,10 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     $scope.messagesClass = "visible";
     $scope.groups = [];
 
-    var emptyThumbsDown = "fa fa-2x fa-thumbs-o-down";
-    var thumbsDown = "fa fa-2x fa-thumbs-down";
-    var emptyThumbsUp = "fa fa-2x fa-thumbs-o-up";
-    var thumbsUp = "fa fa-2x fa-thumbs-up";
+    var emptyThumbsDown = "fa fa-3x fa-thumbs-o-down";
+    var thumbsDown = "fa fa-3x fa-thumbs-down";
+    var emptyThumbsUp = "fa fa-3x fa-thumbs-o-up";
+    var thumbsUp = "fa fa-3x fa-thumbs-up";
 
     // Start ranging for beacons
     $ionicPlatform.ready(function () {
