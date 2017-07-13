@@ -55,7 +55,12 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
         // if we are inside the beacon region, go grab content
         if (pluginResult.state && pluginResult.state === "CLRegionStateInside") {
           console.log("Inside region for beacon: " + pluginResult.region.uuid);
-          $scope.getCardFromServer(pluginResult.region.uuid);
+
+          // Refresh the groups
+          $scope.addUrlToQueue(urlType_GetGroups, generateGroupsUrl());
+
+          // Get the content
+          $scope.addUrlToQueue(urlType_GetMessage, generateGetContentUrl(pluginResult.region.uuid));
         }
       };
 
@@ -102,43 +107,94 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
       });
 
       // save changes
-      updateGroups($scope.groups);
+      writeCachedGroups($scope.groups);
     }
 
     $scope.openMessages = function () {
       $scope.messagesClass = "visible";
-
-      // Close other tabs
       $scope.settingsClass = "invisible";
     }
 
     $scope.openSettings = function () {
       $scope.settingsClass = "visible";
-
-      // Close other tabs
       $scope.messagesClass = "invisible";
     }
 
-    $scope.loadCache = function () {
-      var cache = readCache();
-      this.addCards(cache.cards);
-      $scope.groups = cache.groups;
-    }
-
+    /*
+      Adds a card to the UI
+    */
     $scope.displayCard = function (card) {
       $scope.cards.unshift(angular.extend({}, card));
     }
 
+    /*
+      Displays a notification 
+    */
     $scope.notify = function (notification) {
       console.log(notification);
     }
 
-    $scope.addCards = function (newCards) {
+    /*
+      Adds groups from the API to the UI
+    */
+    $scope.addGroups = function (groups) {
+      groups.forEach(function (group) {
+        var exists = false;
+        $scope.groups.forEach(function (existingGroup) {
+          if (existingGroup.name === group) {
+            exists = true;
+          }
+        });
+
+        if (!exists) {
+          $scope.groups.push({ name: group, class: "fa fa-check-circle" });
+        }
+      });
+    }
+
+    /*
+      Adds cards from a raw state from the API to the UI and cache
+    */
+    $scope.addCards = function (response) {
+      // Convert new cards to view models 
+      var newCards = [];
+      response.forEach(function (content) {
+        // check if user is subscribed to any of the tags, otherwise skip
+        var displayCard = false;
+        if (content.tags != undefined && content.tags != null && content.tags.length > 0) {
+          content.tags.forEach(function (messageTag) {
+            $scope.groups.forEach(function (knownTag) {
+              // If tag is known and subscribed, get the message
+              if (knownTag.name === messageTag && knownTag.class == "fa fa-check-circle") {
+                displayCard = true;
+              }
+            });
+          });
+        }
+        else {
+          displayCard = true;
+        }
+
+        if (displayCard) {
+          newCards.push({
+            id: content.id,
+            htmlContent:
+            content.content,
+            title: content.contentShortDescription,
+            dateTime: content.requestDateTime,
+            location: content.location,
+            tags: content.tags,
+            thumbUpClass: emptyThumbsUp,
+            thumbDownClass: emptyThumbsDown
+          })
+        }
+      });
+
       // Check if we already have this content, and if we should update it.
-      var cache = readCache();
+      var cards = readCachedCards();
       newCards.forEach(function (newCard) {
         var card = null;
-        cache.cards.forEach(function (existingCard) {
+        cards.forEach(function (existingCard) {
           if (existingCard.id === newCard.id) {
             card = newCard;
           }
@@ -169,48 +225,9 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
       updateCards($scope.cards);
     }
 
-    $scope.getCardFromServer = function (beaconId) {
-      var url = generateGetContentUrl(beaconId);
-
-      $http.get(url).success(function (response) {
-        if (response != "") {
-          var cards = [];
-          response.forEach(function (content) {
-            // check if user is subscribed to any of the tags, otherwise skip
-            var displayCard = false;
-            if (content.tags != undefined && content.tags != null && content.tags.length > 0) {
-              content.tags.forEach(function (subscribedTag) {
-                $scope.groups.forEach(function (messageTag) {
-                  if (messageTag.name === subscribedTag) {
-                    displayCard = true;
-                  }
-                });
-              });
-            }
-            else {
-              displayCard = true;
-            }
-
-            if (displayCard) {
-              cards.push({
-                id: content.id,
-                htmlContent:
-                content.content,
-                title: content.contentShortDescription,
-                dateTime: content.requestDateTime,
-                location: content.location,
-                tags: content.tags,
-                thumbUpClass: emptyThumbsUp,
-                thumbDownClass: emptyThumbsDown
-              })
-            }
-          });
-
-          $scope.addCards(cards);
-        }
-      });
-    }
-
+    /*
+      Down rates the card, submitting a rating to the server and updating thumbs down class
+    */
     $scope.downRateCard = function (id) {
       var card = $scope.getCardById(id);
 
@@ -220,33 +237,22 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
       }
 
       var rating = 0;
-
-      // if card is already downrated, rate up
-      if (card.thumbDownClass == thumbsDown) {
-        rating = 1;
-      } else {
+      if (card.thumbDownClass == emptyThumbsDown) {
         rating = -1;
+        card.thumbDownClass = thumbsDown;
+      }
+      else {
+        rating = 1;
+        card.thumbDownClass = emptyThumbsDown;
       }
 
       var url = generateRatingsUrl(id, rating);
-      console.log("rateCard: Current Rating: " + card.thumbDownClass);
-      if (card.thumbDownClass == emptyThumbsDown) {
-        card.thumbDownClass = thumbsDown;
-        console.log("rateCard: New Rating: " + thumbsDown);
-      }
-      else if (card.thumbDownClass == thumbsDown) {
-        card.thumbDownClass = emptyThumbsDown;
-        console.log("rateCard: New Rating: " + emptyThumbsDown);
-      }
-
-      $http.put(url).success(function (response) {
-        console.log("rateCard: submitted rating to server");
-      }).error(function (response) {
-        console.log("rateCard: failed to submit rating to server. Will cache and retry later");
-        updateRatings(id, rating);
-      });;
+      $scope.addUrlToQueue(urlType_Rating, url);
     }
 
+    /*
+      Up rates the card, submitting a rating to the server and updating thumbs up class
+    */
     $scope.upRateCard = function (id) {
       var card = $scope.getCardById(id);
 
@@ -255,29 +261,37 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
         $scope.downRateCard(id);
       }
 
-      var rating = 0;
-
-      // if card is already rated highly, un-rate
-      if (card.thumbUpClass == thumbsUp) {
-        rating = -1; // downrate
-      } else {
-        rating = 1;
-      }
-
       var url = generateRatingsUrl(id, rating);
+      var rating = 0;
       if (card.thumbUpClass == emptyThumbsUp) {
+        rating = 1;
         card.thumbUpClass = thumbsUp;
       }
       else if (card.thumbUpClass == thumbsUp) {
+        rating = -1; // downrate
         card.thumbUpClass = emptyThumbsUp;
       }
 
-      $http.put(url).success(function (response) {
-      }).error(function (response) {
-        updateRatings(id, rating);
-      });;
+      var url = generateRatingsUrl(id, rating);
+      $scope.addUrlToQueue(urlType_Rating, url);
     }
 
+    /*
+      Adds a URL to the queue, and attempts to process it
+    */
+    $scope.addUrlToQueue = function (urlType, url) {
+      console.log("Adding an item to the URL queue. Type = " + urlType + " and URL = " + url);
+
+      urlQueue.push({ urlType: urlType, url: url });
+      writeCachedUrlQueue(urlQueue);
+
+      $scope.processUrlQueue();
+    }
+
+
+    /*
+      Gets a card from teh UI by ID
+    */
     $scope.getCardById = function (contentId) {
       var card = null;
       $scope.cards.forEach(function (possibleCard) {
@@ -289,18 +303,83 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
       return card;
     }
 
-    // Now everything is loaded, sync the cache up
-    syncCacheWithServer($http, $scope);
+    /*
+      Processes the URL queue, iterating through each item and attempting to post it to the server
+    */
+    $scope.processUrlQueue = function () {
+      readCachedUrlQueue().forEach(function (urlQueueItem) {
+        console.log("Processing URL queue item. Type = " + urlQueueItem.urlType + " and URL = " + urlQueueItem.url);
+
+        if (urlQueueItem.urlType === urlType_Rating) {
+          $scope.submitRating(urlQueueItem.url);
+        }
+        else if (urlQueueItem.urlType === urlType_GetGroups) {
+          $scope.getGroups(urlQueueItem.url);
+        }
+        else if (urlQueueItem.urlType === urlType_GetMessage) {
+          $scope.getCards(urlQueueItem.url)
+        }
+      });
+    }
+
+    /*
+      Gets all the groups from the server
+      If success, removes the URL from the queue
+      If error, leaves it on the queue so it will be posted again in future
+    */
+    $scope.getGroups = function (url) {
+      $http.get(url).success(function (response) {
+        $scope.addGroups(response);
+
+        removeUrlFromQueue(url);
+      });
+    }
+
+    /*
+      Submits a rating to the server
+      If success, removes the URL from the queue
+      If error, leaves it on the queue so it will be posted again in future
+    */
+    $scope.submitRating = function (url) {
+      $http.post(url)
+        .success(function (response) {
+          removeUrlFromQueue(url);
+        })
+        .error(function (response) {
+        });;
+    }
+
+    /*
+      Gets the cards from the server
+      If success, removes the URL from the queue
+      If error, leaves it on the queue so it will be posted again in future
+    */
+    $scope.getCards = function (url) {
+      $http.get(url).success(function (response) {
+        if (response != "") {
+          console.log("Retrieved cards from URL: " + JSON.stringify(response));
+          $scope.addCards(response);
+        }
+
+        // Remove URL from cache
+        removeUrlFromQueue(url);
+      });
+    }
+
+    $scope.updateGroups = function () {
+      var groupsUrl = generateGroupsUrl();
+      $scope.addUrlToQueue(urlType_GetGroups, groupsUrl);
+    }
 
     // Add some stub data
-    $scope.getCardFromServer("84addf9c-649f-11e7-907b-a6006ad3dba0");
-
-    // Load the saved cards
-    $scope.loadCache();
-
+    // $scope.getCardFromServer("84addf9c-649f-11e7-907b-a6006ad3dba0");
     $scope.cardDestroyed = function (index) {
       $scope.cards.splice(index, 1);
     };
+
+    // Update the groups, which will also process the URL queue
+    $scope.updateGroups();
+    $scope.addUrlToQueue(urlType_GetMessage, generateGetContentUrl("84ADDF9C-649F-11E7-907B-A6006AD3DBA0"));
   })
 
   .controller('CardCtrl', function ($scope, $ionicSwipeCardDelegate) {

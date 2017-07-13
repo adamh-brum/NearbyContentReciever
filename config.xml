@@ -80,6 +80,7 @@
     <allow-navigation href="http://10.18.40.75:8100" />
     <allow-navigation href="http://10.18.40.41:8100" />
     <allow-navigation href="http://192.168.1.198:8100" />
+    <allow-navigation href="http://10.18.40.58:8100" />
     <plugin name="com.unarin.cordova.beacon" spec="~3.4.0" />
     <plugin name="cordova-sqlite-storage" spec="~2.0.3" />
 </widget>

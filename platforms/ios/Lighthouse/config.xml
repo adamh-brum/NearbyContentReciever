@@ -55,6 +55,7 @@
     <allow-navigation href="http://10.18.40.75:8100" />
     <allow-navigation href="http://10.18.40.41:8100" />
     <allow-navigation href="http://192.168.1.198:8100" />
+    <allow-navigation href="http://10.18.40.58:8100" />
     <icon height="57" src="resources/ios/icon/icon.png" width="57" />
     <icon height="114" src="resources/ios/icon/icon@2x.png" width="114" />
     <icon height="40" src="resources/ios/icon/icon-40.png" width="40" />

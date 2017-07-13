@@ -6,10 +6,10 @@ generateGroupsUrl = function () {
     return generateUrl("Metadata?key=ContentTags");
 }
 
-generateGetContentUrl = function (locationId){
+generateGetContentUrl = function (locationId) {
     return generateUrl("Schedule/ByLocation?locationId=" + locationId);
 }
 
-generateUrl = function (partialUrl){
+generateUrl = function (partialUrl) {
     return "http://nearbycontentapi.azurewebsites.net/api/" + partialUrl;
 }
