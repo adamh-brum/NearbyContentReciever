@@ -51,21 +51,39 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     $ionicPlatform.ready(function () {
       var delegate = new window.cordova.plugins.locationManager.Delegate();
 
-      delegate.didDetermineStateForRegion = function (pluginResult) {
-        // if we are inside the beacon region, go grab content
-        if (pluginResult.state && pluginResult.state === "CLRegionStateInside") {
-          console.log("Inside region for beacon: " + pluginResult.region.uuid);
+      // delegate.didDetermineStateForRegion = function (pluginResult) {
+      //   console.log("Determined state for a beacon. Details: " + JSON.stringify(pluginResult));
 
-          // Refresh the groups
-          $scope.addUrlToQueue(urlType_GetGroups, generateGroupsUrl());
+      //   // if we are inside the beacon region, go grab content
+      //   if (pluginResult.state && pluginResult.state === "CLRegionStateInside") {
+      //     console.log("Inside region for beacon: " + pluginResult.region.uuid);
 
-          // Get the content
-          $scope.addUrlToQueue(urlType_GetMessage, generateGetContentUrl(pluginResult.region.uuid));
-        }
-      };
+      //     // Refresh the groups
+      //     $scope.addUrlToQueue(urlType_GetGroups, generateGroupsUrl());
 
-      delegate.didStartMonitoringForRegion = function (pluginResult) {
-      };
+      //     // Get the content
+      //     $scope.addUrlToQueue(urlType_GetMessage, generateGetContentUrl(pluginResult.region.uuid));
+      //   }
+      // };
+
+      delegate.didRangeBeaconsInRegion = function (pluginResult) {
+        pluginResult.beacons.forEach(function (beacon) {
+          if (beacon.proximity != undefined && beacon.proximity != "ProximityUnknown") {
+            var uuid = beacon.uuid;
+
+            console.log("Inside region for beacon: " + uuid);
+
+            // Refresh the groups
+            $scope.addUrlToQueue(urlType_GetGroups, generateGroupsUrl());
+
+            // Get the content
+            $scope.addUrlToQueue(urlType_GetMessage, generateGetContentUrl(uuid));
+          }
+        });
+      }
+
+      // delegate.didStartMonitoringForRegion = function (pluginResult) {
+      // };
 
       cordova.plugins.locationManager.setDelegate(delegate);
 
@@ -75,24 +93,28 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
           var id = element.beaconId;
           var uuid = element.uuid;
 
-          try {
-            var region = new cordova.plugins.locationManager.BeaconRegion(id, uuid);
-          }
-          catch (ex) {
-            console.log("An error occured while creating a beacon region: " + JSON.stringify(ex));
-            console.log("Error message:" + ex.message);
-          }
-
-          cordova.plugins.locationManager.startMonitoringForRegion(region)
-            .fail(console.error)
-            .done();
-
-          cordova.plugins.locationManager.startRangingBeaconsInRegion(region)
-            .fail(console.error)
-            .done();
+          $scope.monitorBeaconRegion(id, uuid);
         }, this);
       });
     });
+
+    $scope.monitorBeaconRegion = function (id, uuid) {
+      try {
+        var region = new cordova.plugins.locationManager.BeaconRegion(id, uuid);
+      }
+      catch (ex) {
+        console.log("An error occured while creating a beacon region: " + JSON.stringify(ex));
+        console.log("Error message:" + ex.message);
+      }
+
+      cordova.plugins.locationManager.startMonitoringForRegion(region)
+        .fail(console.error)
+        .done();
+
+      cordova.plugins.locationManager.startRangingBeaconsInRegion(region)
+        .fail(console.error)
+        .done();
+    }
 
     $scope.clickGroup = function (groupName) {
       $scope.groups.forEach(function (group) {
@@ -282,10 +304,23 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     $scope.addUrlToQueue = function (urlType, url) {
       console.log("Adding an item to the URL queue. Type = " + urlType + " and URL = " + url);
 
-      urlQueue.push({ urlType: urlType, url: url });
-      writeCachedUrlQueue(urlQueue);
+      // Clean up the URL queue by removing URL's that were processed over five minutes ago
+      cleanUrlQueue();
 
-      $scope.processUrlQueue();
+      // Add the item to the queue, if it does not already exist
+      var exists = false;
+      urlQueue.forEach(function (urlItem) {
+        if (urlItem.url === url) {
+          exists = true;
+        }
+      });
+
+      // Only update the queue (both in memory and on file) and try to process the queue if the URL does not already exist.
+      if (!exists) {
+        urlQueue.push({ urlType: urlType, url: url });
+        writeCachedUrlQueue(urlQueue);
+        $scope.processUrlQueue();
+      }
     }
 
 
@@ -307,6 +342,10 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
       Processes the URL queue, iterating through each item and attempting to post it to the server
     */
     $scope.processUrlQueue = function () {
+      // Before we process it, make sure only items that need processing are on the queue in the first place
+      cleanUrlQueue();
+
+      // Now, go crazy and process each remaining URL in the queue.
       readCachedUrlQueue().forEach(function (urlQueueItem) {
         console.log("Processing URL queue item. Type = " + urlQueueItem.urlType + " and URL = " + urlQueueItem.url);
 
@@ -331,7 +370,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
       $http.get(url).success(function (response) {
         $scope.addGroups(response);
 
-        removeUrlFromQueue(url);
+        completeUrlQueueItem(url);
       });
     }
 
@@ -343,7 +382,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
     $scope.submitRating = function (url) {
       $http.post(url)
         .success(function (response) {
-          removeUrlFromQueue(url);
+          completeUrlQueueItem(url);
         })
         .error(function (response) {
         });;
@@ -362,7 +401,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
         }
 
         // Remove URL from cache
-        removeUrlFromQueue(url);
+        completeUrlQueueItem(url);
       });
     }
 
@@ -379,7 +418,6 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
 
     // Update the groups, which will also process the URL queue
     $scope.updateGroups();
-    $scope.addUrlToQueue(urlType_GetMessage, generateGetContentUrl("84ADDF9C-649F-11E7-907B-A6006AD3DBA0"));
   })
 
   .controller('CardCtrl', function ($scope, $ionicSwipeCardDelegate) {
