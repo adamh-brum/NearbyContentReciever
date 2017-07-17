@@ -83,4 +83,5 @@
     <allow-navigation href="http://10.18.40.58:8100" />
     <plugin name="com.unarin.cordova.beacon" spec="~3.4.0" />
     <plugin name="cordova-sqlite-storage" spec="~2.0.3" />
+    <plugin name="de.appplant.cordova.plugin.local-notification" spec="https://github.com/katzer/cordova-plugin-local-notifications" />
 </widget>

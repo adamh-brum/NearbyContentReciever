@@ -25,6 +25,9 @@
     <feature name="LocationManager">
         <param name="android-package" value="com.unarin.cordova.beacon.LocationManager" />
     </feature>
+    <feature name="LocalNotification">
+        <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification" />
+    </feature>
     <name>Lighthouse</name>
     <description>
         An Ionic Framework and Cordova project.
@@ -34,6 +37,15 @@
     </author>
     <content src="index.html" />
     <access origin="*" />
+    <allow-navigation href="http://192.168.0.29:8100" />
+    <allow-navigation href="http://172.16.8.214:8100" />
+    <allow-navigation href="http://172.16.8.47:8100" />
+    <allow-navigation href="http://172.16.0.169:8100" />
+    <allow-navigation href="http://10.255.211.111:8100" />
+    <allow-navigation href="http://10.18.40.75:8100" />
+    <allow-navigation href="http://10.18.40.41:8100" />
+    <allow-navigation href="http://192.168.1.198:8100" />
+    <allow-navigation href="http://10.18.40.58:8100" />
     <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
     <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
     <icon density="hdpi" src="resources/android/icon/drawable-hdpi-icon.png" />

@@ -302,8 +302,7 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
       Adds a URL to the queue, and attempts to process it
     */
     $scope.addUrlToQueue = function (urlType, url) {
-      console.log("Adding an item to the URL queue. Type = " + urlType + " and URL = " + url);
-
+      console.log("API URL requested. Type = " + urlType + " and URL = " + url);
       // Clean up the URL queue by removing URL's that were processed over five minutes ago
       cleanUrlQueue();
 
@@ -317,9 +316,13 @@ angular.module('contentReceiver', ['ionic', 'ionic.contrib.ui.cards'])
 
       // Only update the queue (both in memory and on file) and try to process the queue if the URL does not already exist.
       if (!exists) {
+        console.log("Adding an item to the URL queue. Type = " + urlType + " and URL = " + url);
         urlQueue.push({ urlType: urlType, url: url });
         writeCachedUrlQueue(urlQueue);
         $scope.processUrlQueue();
+      }
+      else {
+        console.log("Did not an an item to the URL queue as it already exists, either in a complete or incomplete state. This could be because the URL was recently requested, or because it is still pending. Type = " + urlType + " and URL = " + url);
       }
     }
 
